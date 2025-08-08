@@ -66,10 +66,16 @@ export default function Home() {
       <div className="bg-black text-white">
         <div className="text-center py-12 px-6">
           <h2 className="text-3xl font-bold mb-6 tracking-wide">KAVARA TEAM</h2>
-          <p className="text-gray-300 leading-relaxed text-lg max-w-md mx-auto">
+          <p className="text-gray-300 leading-relaxed text-lg max-w-md mx-auto mb-8">
             Качественная спортивная одежда для достижения ваших целей.
             Стиль и функциональность в каждой детали.
           </p>
+          <button 
+            className="border border-white text-white px-8 py-3 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors"
+            onClick={() => window.open('https://t.me/kavarabrand', '_blank')}
+          >
+            ПЕРЕЙТИ В КАНАЛ
+          </button>
         </div>
       </div>
     </div>
