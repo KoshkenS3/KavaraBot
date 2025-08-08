@@ -10,7 +10,11 @@ import ReadyBoxes from "./pages/ready-boxes";
 import About from "./pages/about";
 import Order from "./pages/order";
 import OrderSuccess from "./pages/order-success";
+import MyOrders from "./pages/my-orders";
+import Profile from "./pages/profile";
+import Support from "./pages/support";
 import NotFound from "./pages/not-found";
+import BottomNav from "./components/bottom-nav";
 
 function Router() {
   return (
@@ -22,6 +26,9 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/order" component={Order} />
       <Route path="/order-success" component={OrderSuccess} />
+      <Route path="/my-orders" component={MyOrders} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/support" component={Support} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -34,6 +41,7 @@ function App() {
         <div className="telegram-app font-inter">
           <Toaster />
           <Router />
+          <BottomNav />
         </div>
       </TooltipProvider>
     </QueryClientProvider>
