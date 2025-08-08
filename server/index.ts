@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupTelegramBot, getBotInfo } from "./telegram";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Setup Telegram Bot integration
+  await setupTelegramBot(app);
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -65,7 +69,18 @@ app.use((req, res, next) => {
     port,
     host: "0.0.0.0",
     reusePort: true,
-  }, () => {
+  }, async () => {
     log(`serving on port ${port}`);
+    
+    // Initialize Telegram Bot
+    try {
+      const botInfo = await getBotInfo();
+      if (botInfo) {
+        log(`Telegram Bot connected: @${botInfo.username}`);
+        log(`Mini App URL: https://${process.env.REPLIT_DEV_DOMAIN || 'localhost:' + port}`);
+      }
+    } catch (error) {
+      log('Failed to connect to Telegram Bot:', error);
+    }
   });
 })();
