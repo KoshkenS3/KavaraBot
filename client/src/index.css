@@ -4,81 +4,83 @@
 @tailwind utilities;
 
 :root {
+  /* KAVARA Brand Theme - Black/White/Red */
   --background: hsl(0 0% 100%);
-  --foreground: hsl(210 25% 7.8431%);
-  --card: hsl(180 6.6667% 97.0588%);
-  --card-foreground: hsl(210 25% 7.8431%);
+  --foreground: hsl(0 0% 9%);
+  --card: hsl(0 0% 98%);
+  --card-foreground: hsl(0 0% 9%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(210 25% 7.8431%);
-  --primary: hsl(15 100% 60%);
+  --popover-foreground: hsl(0 0% 9%);
+  --primary: hsl(0 0% 9%);
   --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(209 100% 50%);
-  --secondary-foreground: hsl(0 0% 100%);
-  --muted: hsl(210 40% 96%);
-  --muted-foreground: hsl(215 13.8% 34.1%);
-  --accent: hsl(210 40% 96%);
-  --accent-foreground: hsl(215 13.8% 34.1%);
-  --destructive: hsl(0 84.2% 60.2%);
+  --secondary: hsl(0 0% 96%);
+  --secondary-foreground: hsl(0 0% 9%);
+  --muted: hsl(0 0% 96%);
+  --muted-foreground: hsl(0 0% 45%);
+  --accent: hsl(0 84% 60%);
+  --accent-foreground: hsl(0 0% 100%);
+  --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(214.3 31.8% 91.4%);
-  --input: hsl(214.3 31.8% 91.4%);
-  --ring: hsl(15 100% 60%);
-  --chart-1: hsl(15 100% 60%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(180 6.6667% 97.0588%);
-  --sidebar-foreground: hsl(210 25% 7.8431%);
-  --sidebar-primary: hsl(15 100% 60%);
+  --border: hsl(0 0% 90%);
+  --input: hsl(0 0% 96%);
+  --ring: hsl(0 0% 9%);
+  --chart-1: hsl(0 0% 9%);
+  --chart-2: hsl(0 84% 60%);
+  --chart-3: hsl(0 0% 60%);
+  --chart-4: hsl(0 0% 80%);
+  --chart-5: hsl(0 0% 40%);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(0 0% 9%);
+  --sidebar-primary: hsl(0 0% 9%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(210 40% 96%);
-  --sidebar-accent-foreground: hsl(215 13.8% 34.1%);
-  --sidebar-border: hsl(214.3 31.8% 91.4%);
-  --sidebar-ring: hsl(15 100% 60%);
+  --sidebar-accent: hsl(0 0% 96%);
+  --sidebar-accent-foreground: hsl(0 0% 9%);
+  --sidebar-border: hsl(0 0% 90%);
+  --sidebar-ring: hsl(0 0% 9%);
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: 0.75rem;
-  --gray-50: hsl(210 20% 98%);
-  --gray-100: hsl(220 14.3% 95.9%);
-  --gray-500: hsl(220 8.9% 46.1%);
-  --gray-900: hsl(224 71.4% 4.1%);
+  --radius: 0.25rem;
+  --gray-50: hsl(0 0% 98%);
+  --gray-100: hsl(0 0% 96%);
+  --gray-500: hsl(0 0% 46%);
+  --gray-900: hsl(0 0% 9%);
 }
 
 .dark {
-  --background: hsl(224 71.4% 4.1%);
-  --foreground: hsl(210 20% 98%);
-  --card: hsl(224 71.4% 4.1%);
-  --card-foreground: hsl(210 20% 98%);
-  --popover: hsl(224 71.4% 4.1%);
-  --popover-foreground: hsl(210 20% 98%);
-  --primary: hsl(15 100% 60%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(209 100% 50%);
-  --secondary-foreground: hsl(0 0% 100%);
-  --muted: hsl(215 27.9% 16.9%);
-  --muted-foreground: hsl(217.9 10.6% 64.9%);
-  --accent: hsl(215 27.9% 16.9%);
-  --accent-foreground: hsl(210 20% 98%);
-  --destructive: hsl(0 62.8% 30.6%);
-  --destructive-foreground: hsl(210 20% 98%);
-  --border: hsl(215 27.9% 16.9%);
-  --input: hsl(215 27.9% 16.9%);
-  --ring: hsl(15 100% 60%);
-  --chart-1: hsl(15 100% 60%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(224 71.4% 4.1%);
-  --sidebar-foreground: hsl(210 20% 98%);
-  --sidebar-primary: hsl(15 100% 60%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(215 27.9% 16.9%);
-  --sidebar-accent-foreground: hsl(210 20% 98%);
-  --sidebar-border: hsl(215 27.9% 16.9%);
-  --sidebar-ring: hsl(15 100% 60%);
+  /* KAVARA Dark Theme */
+  --background: hsl(0 0% 9%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(0 0% 12%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(0 0% 9%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(0 0% 98%);
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(0 0% 20%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(0 0% 20%);
+  --muted-foreground: hsl(0 0% 65%);
+  --accent: hsl(0 84% 60%);
+  --accent-foreground: hsl(0 0% 100%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 20%);
+  --input: hsl(0 0% 20%);
+  --ring: hsl(0 0% 98%);
+  --chart-1: hsl(0 0% 98%);
+  --chart-2: hsl(0 84% 60%);
+  --chart-3: hsl(0 0% 60%);
+  --chart-4: hsl(0 0% 40%);
+  --chart-5: hsl(0 0% 80%);
+  --sidebar: hsl(0 0% 9%);
+  --sidebar-foreground: hsl(0 0% 98%);
+  --sidebar-primary: hsl(0 0% 98%);
+  --sidebar-primary-foreground: hsl(0 0% 9%);
+  --sidebar-accent: hsl(0 0% 20%);
+  --sidebar-accent-foreground: hsl(0 0% 98%);
+  --sidebar-border: hsl(0 0% 20%);
+  --sidebar-ring: hsl(0 0% 98%);
 }
 
 @layer base {
@@ -107,33 +109,47 @@
   .telegram-app {
     @apply max-w-md mx-auto bg-white min-h-screen relative;
     padding-bottom: 80px; /* Space for bottom navigation */
+    font-family: 'Inter', sans-serif;
   }
 
   .app-header {
-    @apply bg-gradient-to-r from-primary to-secondary text-white p-4 sticky top-0 z-50;
+    @apply bg-black text-white p-4 sticky top-0 z-50;
   }
 
   .selection-btn {
-    @apply p-3 border border-gray-300 rounded-lg text-center hover:border-primary hover:bg-orange-50 transition-all duration-200;
+    @apply p-4 border-2 border-black text-center hover:bg-black hover:text-white transition-all duration-200 font-semibold tracking-wide;
   }
 
   .selection-btn.selected {
-    @apply bg-primary text-white border-primary;
+    @apply bg-black text-white border-black;
   }
 
   .goal-btn {
-    @apply w-full p-4 border border-gray-300 rounded-lg text-left hover:border-primary hover:bg-orange-50 flex items-center space-x-3 transition-all duration-200;
+    @apply w-full p-4 border-2 border-black text-left hover:bg-black hover:text-white flex items-center space-x-3 transition-all duration-200 font-semibold tracking-wide;
   }
 
   .goal-btn.selected {
-    @apply bg-orange-100 border-primary;
+    @apply bg-black text-white border-black;
   }
 
   .box-card {
-    @apply bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100;
+    @apply bg-white border-2 border-black overflow-hidden;
   }
 
   .coming-soon {
-    @apply opacity-75;
+    @apply opacity-60;
+  }
+
+  /* KAVARA Typography */
+  .kavara-title {
+    @apply text-black font-bold tracking-wide uppercase;
+  }
+
+  .kavara-button {
+    @apply bg-black text-white font-semibold tracking-wide uppercase hover:bg-gray-900 transition-colors;
+  }
+
+  .kavara-button-outline {
+    @apply border-2 border-black text-black font-semibold tracking-wide uppercase hover:bg-black hover:text-white transition-colors;
   }
 }

@@ -12,52 +12,60 @@ export default function BoxCard({ box, onSelect, onNotify, variant = "default" }
   const isComingSoon = variant === "coming-soon" || !box.isAvailable;
 
   return (
-    <div className={`box-card ${isComingSoon ? "coming-soon" : ""}`}>
-      <img 
-        src={box.imageUrl || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"} 
-        alt={box.name}
-        className={`w-full h-48 object-cover ${isComingSoon ? "grayscale" : ""}`}
-      />
-      <div className="p-4">
-        <div className="flex items-center space-x-2 mb-2">
-          {box.emoji && <span className="text-2xl">{box.emoji}</span>}
-          <h3 className="font-semibold text-lg">{box.name}</h3>
-        </div>
-        
-        <p className="text-gray-600 text-sm mb-3">{box.description}</p>
+    <div className={`border-2 border-black bg-white ${isComingSoon ? "opacity-60" : ""}`}>
+      <div className="aspect-[4/3] relative overflow-hidden">
+        <img 
+          src={box.imageUrl || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"} 
+          alt={box.name}
+          className={`w-full h-full object-cover ${isComingSoon ? "grayscale" : ""}`}
+        />
+        {isComingSoon && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <span className="text-white font-bold text-lg tracking-wide">СКОРО</span>
+          </div>
+        )}
+      </div>
+      
+      <div className="p-6">
+        <h3 className="text-xl font-bold text-black mb-2 tracking-wide">{box.name.toUpperCase()}</h3>
+        <p className="text-gray-600 mb-4 text-sm">{box.description}</p>
         
         {box.contents && box.contents.length > 0 && !isComingSoon && (
-          <div className="mb-3">
-            <span className="text-xs text-gray-500">В составе:</span>
-            <ul className="text-sm text-gray-700 mt-1">
+          <div className="mb-6">
+            <div className="text-xs font-bold text-black mb-2 tracking-wide">СОСТАВ:</div>
+            <ul className="text-sm text-gray-700 space-y-1">
               {box.contents.map((item, index) => (
-                <li key={index}>• {item}</li>
+                <li key={index} className="flex items-start">
+                  <span className="text-black mr-2">•</span>
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           </div>
         )}
         
-        {isComingSoon ? (
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => onNotify?.(box)}
-          >
-            Уведомить о поступлении
-          </Button>
-        ) : (
-          <div className="flex items-center justify-between">
-            <span className="text-xl font-bold text-primary">
-              {box.price.toLocaleString('ru-RU')}₽
-            </span>
-            <Button 
-              onClick={() => onSelect?.(box)}
-              className="bg-primary text-white hover:bg-primary/90"
+        <div className="border-t border-gray-200 pt-4">
+          {isComingSoon ? (
+            <button 
+              className="w-full border border-black text-black py-3 font-semibold tracking-wide hover:bg-black hover:text-white transition-colors"
+              onClick={() => onNotify?.(box)}
             >
-              Выбрать{variant === "default" ? " этот бокс" : ""}
-            </Button>
-          </div>
-        )}
+              УВЕДОМИТЬ О ПОСТУПЛЕНИИ
+            </button>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="text-2xl font-bold text-black">
+                {box.price.toLocaleString('ru-RU')} ₽
+              </div>
+              <button 
+                onClick={() => onSelect?.(box)}
+                className="bg-black text-white px-6 py-3 font-semibold tracking-wide hover:bg-gray-900 transition-colors"
+              >
+                ВЫБРАТЬ
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

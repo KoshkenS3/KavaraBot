@@ -59,27 +59,27 @@ export default function ReadyBoxes() {
   const comingSoonBoxes = readyBoxes?.filter(box => !box.isAvailable) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-4 bg-secondary text-white">
-        <div className="flex items-center space-x-3">
+    <div className="min-h-screen bg-white">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center space-x-4">
           <button 
-            className="p-2" 
+            className="p-2 -ml-2" 
             onClick={() => setLocation("/")}
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 text-black" />
           </button>
           <div>
-            <h2 className="font-semibold">Готовые боксы</h2>
-            <p className="text-sm text-white/80">Выберите готовый комплект</p>
+            <h2 className="text-2xl font-bold text-black tracking-wide">ГОТОВЫЕ КОЛЛЕКЦИИ</h2>
+            <p className="text-gray-600 font-medium">ВЫБЕРИТЕ ГОТОВЫЙ КОМПЛЕКТ</p>
           </div>
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-6">
         {/* Current Boxes Section */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4">Текущие боксы</h3>
-          <div className="space-y-4">
+        <div className="mb-8">
+          <h3 className="text-xl font-bold text-black mb-6 tracking-wide">ДОСТУПНО СЕЙЧАС</h3>
+          <div className="space-y-6">
             {availableBoxes.map((box) => (
               <BoxCard
                 key={box.id}
@@ -94,8 +94,8 @@ export default function ReadyBoxes() {
         {/* Coming Soon Section */}
         {comingSoonBoxes.length > 0 && (
           <div>
-            <h3 className="text-lg font-semibold mb-4">Скоро в продаже</h3>
-            <div className="space-y-4">
+            <h3 className="text-xl font-bold text-black mb-6 tracking-wide">СКОРО В ПРОДАЖЕ</h3>
+            <div className="space-y-6">
               {comingSoonBoxes.map((box) => (
                 <BoxCard
                   key={box.id}

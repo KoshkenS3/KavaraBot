@@ -1,5 +1,4 @@
 import { useLocation } from "wouter";
-import AppHeader from "@/components/app-header";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -9,91 +8,92 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader />
-      
-      {/* Welcome Message */}
-      <div className="p-4 bg-gradient-to-br from-blue-50 to-orange-50">
-        <div className="text-center py-6">
-          <div className="text-4xl mb-3">👋</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Добро пожаловать в KAVARA
-          </h2>
-          <p className="text-gray-600">
-            Твой персональный стилист спортивной одежды!
-          </p>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="text-center py-16 px-6 border-b border-gray-200">
+        <h1 className="text-6xl font-bold text-black mb-4 tracking-tight">
+          KAVARA
+        </h1>
+        <p className="text-xl text-gray-700 font-medium tracking-wide">
+          ОДЕЖДА ДЛЯ БОРЬБЫ
+        </p>
+        <div className="mt-8">
+          <div className="w-20 h-0.5 bg-black mx-auto"></div>
         </div>
       </div>
 
-      {/* Main Menu Options */}
-      <div className="p-4 space-y-4">
-        {/* Custom Box Option */}
-        <div 
-          className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 cursor-pointer hover:shadow-xl transition-shadow"
+      {/* Main Actions */}
+      <div className="p-6 space-y-4">
+        <button 
+          className="w-full bg-black text-white py-6 text-lg font-semibold tracking-wide hover:bg-gray-900 transition-colors"
           onClick={() => handleMenuOption("/quiz")}
         >
-          <div className="flex items-center space-x-4">
-            <div className="text-3xl">🎯</div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-gray-900">
-                Собрать бокс самостоятельно
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Персональный подбор под твои потребности
-              </p>
-            </div>
-            <div className="text-gray-400">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
-        </div>
+          ПЕРСОНАЛЬНЫЙ ПОДБОР
+        </button>
 
-        {/* Ready Boxes Option */}
-        <div 
-          className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 cursor-pointer hover:shadow-xl transition-shadow"
+        <button 
+          className="w-full border-2 border-black text-black py-6 text-lg font-semibold tracking-wide hover:bg-black hover:text-white transition-colors"
           onClick={() => handleMenuOption("/ready-boxes")}
         >
-          <div className="flex items-center space-x-4">
-            <div className="text-3xl">📦</div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-gray-900">
-                Выбрать готовый бокс
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Готовые комплекты от наших стилистов
-              </p>
+          ГОТОВЫЕ КОЛЛЕКЦИИ
+        </button>
+      </div>
+
+      {/* Categories Grid */}
+      <div className="p-6 space-y-6">
+        <h2 className="text-2xl font-bold text-black tracking-wide">КАТЕГОРИИ</h2>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
+            <div className="text-center">
+              <div className="text-lg font-bold text-black mb-1">РАШГАРДЫ</div>
+              <div className="text-sm text-gray-600 font-medium">ДЛЯ БОРЬБЫ</div>
             </div>
-            <div className="text-gray-400">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+          </div>
+          
+          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
+            <div className="text-center">
+              <div className="text-lg font-bold text-black mb-1">ШОРТЫ</div>
+              <div className="text-sm text-gray-600 font-medium">ДЛЯ ТРЕНИРОВОК</div>
+            </div>
+          </div>
+          
+          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
+            <div className="text-center">
+              <div className="text-lg font-bold text-black mb-1">ФУТБОЛКИ</div>
+              <div className="text-sm text-gray-600 font-medium">LIFESTYLE</div>
+            </div>
+          </div>
+          
+          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
+            <div className="text-center">
+              <div className="text-lg font-bold text-black mb-1">АКСЕССУАРЫ</div>
+              <div className="text-sm text-gray-600 font-medium">ДОПОЛНИТЕЛЬНО</div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* About KAVARA Option */}
-        <div 
-          className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 cursor-pointer hover:shadow-xl transition-shadow"
-          onClick={() => handleMenuOption("/about")}
-        >
-          <div className="flex items-center space-x-4">
-            <div className="text-3xl">❓</div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-gray-900">
-                Что такое KAVARA
-              </h3>
-              <p className="text-gray-600 text-sm">
-                История бренда и наша философия
-              </p>
-            </div>
-            <div className="text-gray-400">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
+      {/* Sale Banner */}
+      <div className="mx-6 mb-6 bg-red-600 text-white text-center py-4">
+        <div className="text-sm font-bold tracking-wide">ПЕРСОНАЛЬНЫЙ КОМПЛЕКТ KAVARA</div>
+        <div className="text-lg font-bold">СО СКИДКОЙ 15%</div>
+      </div>
+
+      {/* Brand Philosophy */}
+      <div className="bg-black text-white">
+        <div className="text-center py-12 px-6">
+          <h2 className="text-3xl font-bold mb-6 tracking-wide">KAVARA CLAN</h2>
+          <p className="text-gray-300 leading-relaxed text-lg max-w-md mx-auto">
+            Одежда для тех, кто не сдается. Для тех, кто борется и побеждает.
+            Качество, которое выдерживает самые жесткие тренировки.
+          </p>
+          <button 
+            className="mt-8 border border-white text-white px-8 py-3 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors"
+            onClick={() => handleMenuOption("/about")}
+          >
+            УЗНАТЬ БОЛЬШЕ
+          </button>
         </div>
       </div>
     </div>
