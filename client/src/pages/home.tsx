@@ -15,7 +15,7 @@ export default function Home() {
           KAVARA
         </h1>
         <p className="text-xl text-gray-700 font-medium tracking-wide">
-          ОДЕЖДА ДЛЯ БОРЬБЫ
+          СПОРТИВНАЯ ОДЕЖДА
         </p>
         <div className="mt-8">
           <div className="w-20 h-0.5 bg-black mx-auto"></div>
@@ -39,38 +39,20 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Categories Grid */}
-      <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-black tracking-wide">КАТЕГОРИИ</h2>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
-            <div className="text-center">
-              <div className="text-lg font-bold text-black mb-1">РАШГАРДЫ</div>
-              <div className="text-sm text-gray-600 font-medium">ДЛЯ БОРЬБЫ</div>
-            </div>
-          </div>
-          
-          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
-            <div className="text-center">
-              <div className="text-lg font-bold text-black mb-1">ШОРТЫ</div>
-              <div className="text-sm text-gray-600 font-medium">ДЛЯ ТРЕНИРОВОК</div>
-            </div>
-          </div>
-          
-          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
-            <div className="text-center">
-              <div className="text-lg font-bold text-black mb-1">ФУТБОЛКИ</div>
-              <div className="text-sm text-gray-600 font-medium">LIFESTYLE</div>
-            </div>
-          </div>
-          
-          <div className="aspect-square bg-gray-100 flex items-center justify-center border border-gray-300 hover:bg-gray-200 transition-colors cursor-pointer">
-            <div className="text-center">
-              <div className="text-lg font-bold text-black mb-1">АКСЕССУАРЫ</div>
-              <div className="text-sm text-gray-600 font-medium">ДОПОЛНИТЕЛЬНО</div>
-            </div>
-          </div>
+      {/* About KAVARA Section */}
+      <div className="p-6 bg-gray-50 border-y border-gray-200">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-black mb-4 tracking-wide">ЧТО ТАКОЕ KAVARA</h2>
+          <p className="text-gray-700 leading-relaxed max-w-sm mx-auto mb-6">
+            Мы помогаем подобрать идеальную спортивную одежду для ваших тренировок. 
+            Наши стилисты учитывают ваши предпочтения, телосложение и спортивные цели.
+          </p>
+          <button 
+            className="border border-black text-black px-6 py-3 font-semibold tracking-wide hover:bg-black hover:text-white transition-colors"
+            onClick={() => handleMenuOption("/about")}
+          >
+            УЗНАТЬ БОЛЬШЕ
+          </button>
         </div>
       </div>
 
@@ -83,17 +65,11 @@ export default function Home() {
       {/* Brand Philosophy */}
       <div className="bg-black text-white">
         <div className="text-center py-12 px-6">
-          <h2 className="text-3xl font-bold mb-6 tracking-wide">KAVARA CLAN</h2>
+          <h2 className="text-3xl font-bold mb-6 tracking-wide">KAVARA TEAM</h2>
           <p className="text-gray-300 leading-relaxed text-lg max-w-md mx-auto">
-            Одежда для тех, кто не сдается. Для тех, кто борется и побеждает.
-            Качество, которое выдерживает самые жесткие тренировки.
+            Качественная спортивная одежда для достижения ваших целей.
+            Стиль и функциональность в каждой детали.
           </p>
-          <button 
-            className="mt-8 border border-white text-white px-8 py-3 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors"
-            onClick={() => handleMenuOption("/about")}
-          >
-            УЗНАТЬ БОЛЬШЕ
-          </button>
         </div>
       </div>
     </div>
