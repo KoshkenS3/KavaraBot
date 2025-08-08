@@ -21,7 +21,8 @@ https://t.me/kavaraappbot/start
 - **Поддержка**: https://t.me/kavaraappbot?startapp=support
 
 ### Веб-приложение
-- **URL**: https://b5c2b040-9060-4c94-bc16-e4271d93d2af-00-1ke7ldax14w72.picard.replit.dev
+- **Development URL**: https://b5c2b040-9060-4c94-bc16-e4271d93d2af-00-1ke7ldax14w72.picard.replit.dev
+- **Production URL**: https://kavarabot.replit.app (deployed - работает 24/7)
 
 ## Команды бота
 - `/start` - Главное меню
