@@ -86,7 +86,7 @@ app.use((req, res, next) => {
           log(`Mini App URL: https://${process.env.REPLIT_DEV_DOMAIN || 'localhost:' + port}`);
         }
       } catch (error) {
-        log('Failed to connect to Telegram Bot:', error);
+        log(`Failed to connect to Telegram Bot: ${error}`);
       }
     });
   } catch (error) {
