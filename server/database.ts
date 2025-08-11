@@ -10,9 +10,10 @@ export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
   synchronize: true, // Only for development
-  logging: false,
+  logging: true, // Enable logging for debugging
   entities: [User, QuizResponse, Box, Order, Notification],
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  dropSchema: false, // Don't drop schema automatically
 });
 
 export async function initializeDatabase() {
