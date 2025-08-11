@@ -20,18 +20,18 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js server
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: PostgreSQL with TypeORM
 - **Database Provider**: Neon Database (serverless PostgreSQL)
 - **API Design**: RESTful API with JSON responses
 - **Development**: Hot module replacement with Vite middleware integration
-- **Storage Layer**: Abstracted storage interface with in-memory fallback for development
+- **Storage Layer**: TypeORM repositories with entity-based data access
 
 ### Data Storage Solutions
 - **Primary Database**: PostgreSQL via Neon Database
-- **ORM**: Drizzle ORM with TypeScript schema definitions
-- **Schema Management**: Drizzle Kit for migrations and schema updates
+- **ORM**: TypeORM with decorators and entity classes
+- **Schema Management**: TypeORM automatic synchronization for development
 - **Session Storage**: Browser sessionStorage for temporary data persistence
-- **Development Storage**: In-memory storage implementation for offline development
+- **Development Storage**: TypeORM repositories with full PostgreSQL integration
 
 ### Authentication and Authorization
 - **Primary Auth**: Telegram WebApp authentication via initDataUnsafe
@@ -49,7 +49,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Architectural Decisions
 
-**Database Design**: Uses UUID primary keys with foreign key relationships between users, quiz responses, boxes, orders, and notifications. JSON columns store array data for flexible content management.
+**Database Design**: Uses TypeORM entities with decorators, UUID primary keys, and proper relationship mapping between users, quiz responses, boxes, orders, and notifications. Entity classes define schema structure and relationships.
 
 **API Structure**: RESTful endpoints organized by resource type (users, quiz-responses, boxes, orders, notifications) with proper HTTP status codes and error handling.
 

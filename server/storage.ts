@@ -1,10 +1,11 @@
-import { getPool } from "./database";
+import { Repository } from "typeorm";
+import { AppDataSource } from "./database";
+import { User } from "./entities/User";
+import { QuizResponse } from "./entities/QuizResponse";
+import { Box } from "./entities/Box";
+import { Order } from "./entities/Order";
+import { Notification } from "./entities/Notification";
 import type { 
-  User,
-  QuizResponse,
-  Box,
-  Order,
-  Notification,
   CreateUserDto, 
   CreateQuizResponseDto, 
   CreateBoxDto, 
@@ -40,180 +41,141 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  private pool = getPool;
+  private userRepository: Repository<User>;
+  private quizResponseRepository: Repository<QuizResponse>;
+  private boxRepository: Repository<Box>;
+  private orderRepository: Repository<Order>;
+  private notificationRepository: Repository<Notification>;
+
+  constructor() {
+    this.userRepository = AppDataSource.getRepository(User);
+    this.quizResponseRepository = AppDataSource.getRepository(QuizResponse);
+    this.boxRepository = AppDataSource.getRepository(Box);
+    this.orderRepository = AppDataSource.getRepository(Order);
+    this.notificationRepository = AppDataSource.getRepository(Notification);
+  }
 
   async getUser(id: string): Promise<User | null> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM users WHERE id = $1",
-      [id]
-    );
-    return rows[0] || null;
+    return await this.userRepository.findOneBy({ id });
   }
 
   async getUserByTelegramId(telegramId: string): Promise<User | null> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM users WHERE telegram_id = $1",
-      [telegramId]
-    );
-    return rows[0] || null;
+    return await this.userRepository.findOneBy({ telegramId });
   }
 
   async createUser(userData: CreateUserDto): Promise<User> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      `INSERT INTO users (telegram_id, username, first_name, last_name)
-       VALUES ($1, $2, $3, $4)
-       RETURNING *`,
-      [userData.telegramId, userData.username, userData.firstName, userData.lastName]
-    );
-    return rows[0];
+    const user = this.userRepository.create({
+      telegramId: userData.telegramId,
+      username: userData.username,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+    });
+    return await this.userRepository.save(user);
   }
 
   async getQuizResponse(userId: string): Promise<QuizResponse | null> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM quiz_responses WHERE user_id = $1",
-      [userId]
-    );
-    return rows[0] || null;
+    return await this.quizResponseRepository.findOneBy({ userId });
   }
 
   async createQuizResponse(responseData: CreateQuizResponseDto): Promise<QuizResponse> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      `INSERT INTO quiz_responses (user_id, size, height, weight, goals, budget)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [responseData.userId, responseData.size, responseData.height, responseData.weight, responseData.goals, responseData.budget]
-    );
-    return rows[0];
+    const response = this.quizResponseRepository.create({
+      userId: responseData.userId,
+      size: responseData.size,
+      height: responseData.height,
+      weight: responseData.weight,
+      goals: responseData.goals,
+      budget: responseData.budget,
+    });
+    return await this.quizResponseRepository.save(response);
   }
 
   async updateQuizResponse(userId: string, updateData: Partial<CreateQuizResponseDto>): Promise<QuizResponse | null> {
-    const client = this.pool();
     const existing = await this.getQuizResponse(userId);
     if (!existing) return null;
-
-    const fields = [];
-    const values = [];
-    let paramIndex = 1;
-
-    if (updateData.size !== undefined) {
-      fields.push(`size = $${paramIndex++}`);
-      values.push(updateData.size);
-    }
-    if (updateData.height !== undefined) {
-      fields.push(`height = $${paramIndex++}`);
-      values.push(updateData.height);
-    }
-    if (updateData.weight !== undefined) {
-      fields.push(`weight = $${paramIndex++}`);
-      values.push(updateData.weight);
-    }
-    if (updateData.goals !== undefined) {
-      fields.push(`goals = $${paramIndex++}`);
-      values.push(updateData.goals);
-    }
-    if (updateData.budget !== undefined) {
-      fields.push(`budget = $${paramIndex++}`);
-      values.push(updateData.budget);
-    }
-
-    if (fields.length === 0) return existing;
-
-    values.push(userId);
-    const { rows } = await client.query(
-      `UPDATE quiz_responses SET ${fields.join(', ')} WHERE user_id = $${paramIndex} RETURNING *`,
-      values
-    );
-    return rows[0];
+    
+    Object.assign(existing, {
+      size: updateData.size ?? existing.size,
+      height: updateData.height ?? existing.height,
+      weight: updateData.weight ?? existing.weight,
+      goals: updateData.goals ?? existing.goals,
+      budget: updateData.budget ?? existing.budget,
+    });
+    
+    return await this.quizResponseRepository.save(existing);
   }
 
   async getAllBoxes(): Promise<Box[]> {
-    const client = this.pool();
-    const { rows } = await client.query("SELECT * FROM boxes ORDER BY created_at DESC");
-    return rows;
+    return await this.boxRepository.find({
+      order: { createdAt: "DESC" }
+    });
   }
 
   async getBox(id: string): Promise<Box | null> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM boxes WHERE id = $1",
-      [id]
-    );
-    return rows[0] || null;
+    return await this.boxRepository.findOneBy({ id });
   }
 
   async getBoxesByCategory(category: string): Promise<Box[]> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM boxes WHERE category = $1 ORDER BY created_at DESC",
-      [category]
-    );
-    return rows;
+    return await this.boxRepository.find({
+      where: { category },
+      order: { createdAt: "DESC" }
+    });
   }
 
   async createBox(boxData: CreateBoxDto): Promise<Box> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      `INSERT INTO boxes (name, description, price, image_url, contents, category, emoji, is_available)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-      [boxData.name, boxData.description, boxData.price, boxData.imageUrl, boxData.contents, boxData.category, boxData.emoji, boxData.isAvailable ?? true]
-    );
-    return rows[0];
+    const box = this.boxRepository.create({
+      name: boxData.name,
+      description: boxData.description,
+      price: boxData.price,
+      imageUrl: boxData.imageUrl,
+      contents: boxData.contents,
+      category: boxData.category,
+      emoji: boxData.emoji,
+      isAvailable: boxData.isAvailable ?? true,
+    });
+    return await this.boxRepository.save(box);
   }
 
   async getOrder(id: string): Promise<Order | null> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM orders WHERE id = $1",
-      [id]
-    );
-    return rows[0] || null;
+    return await this.orderRepository.findOneBy({ id });
   }
 
   async getOrdersByUser(userId: string): Promise<Order[]> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
-      [userId]
-    );
-    return rows;
+    return await this.orderRepository.find({
+      where: { userId },
+      order: { createdAt: "DESC" }
+    });
   }
 
   async createOrder(orderData: CreateOrderDto): Promise<Order> {
-    const client = this.pool();
     const orderNumber = `KB${Date.now().toString().slice(-6)}`;
-    const { rows } = await client.query(
-      `INSERT INTO orders (order_number, user_id, box_id, customer_name, customer_phone, customer_email, delivery_method, payment_method, total_price, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-       RETURNING *`,
-      [orderNumber, orderData.userId, orderData.boxId, orderData.customerName, orderData.customerPhone, orderData.customerEmail, orderData.deliveryMethod, orderData.paymentMethod, orderData.totalPrice, "pending"]
-    );
-    return rows[0];
+    const order = this.orderRepository.create({
+      orderNumber,
+      userId: orderData.userId,
+      boxId: orderData.boxId,
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone,
+      customerEmail: orderData.customerEmail,
+      deliveryMethod: orderData.deliveryMethod,
+      paymentMethod: orderData.paymentMethod,
+      totalPrice: orderData.totalPrice,
+      status: "pending",
+    });
+    return await this.orderRepository.save(order);
   }
 
   async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      `INSERT INTO notifications (user_id, box_id)
-       VALUES ($1, $2)
-       RETURNING *`,
-      [notificationData.userId, notificationData.boxId]
-    );
-    return rows[0];
+    const notification = this.notificationRepository.create({
+      userId: notificationData.userId,
+      boxId: notificationData.boxId,
+    });
+    return await this.notificationRepository.save(notification);
   }
 
   async getNotificationsByBox(boxId: string): Promise<Notification[]> {
-    const client = this.pool();
-    const { rows } = await client.query(
-      "SELECT * FROM notifications WHERE box_id = $1 ORDER BY created_at DESC",
-      [boxId]
-    );
-    return rows;
+    return await this.notificationRepository.find({
+      where: { boxId },
+      order: { createdAt: "DESC" }
+    });
   }
 }
 

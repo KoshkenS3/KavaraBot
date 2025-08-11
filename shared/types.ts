@@ -1,11 +1,11 @@
 // User types
 export interface User {
   id: string;
-  created_at: Date;
-  telegram_id?: string;
+  createdAt: Date;
+  telegramId?: string;
   username?: string;
-  first_name?: string;
-  last_name?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface CreateUserDto {
@@ -18,8 +18,8 @@ export interface CreateUserDto {
 // Quiz Response types
 export interface QuizResponse {
   id: string;
-  created_at: Date;
-  user_id?: string;
+  createdAt: Date;
+  userId?: string;
   size?: string;
   height?: string;
   weight?: string;
@@ -39,15 +39,15 @@ export interface CreateQuizResponseDto {
 // Box types
 export interface Box {
   id: string;
-  created_at: Date;
+  createdAt: Date;
   name: string;
   description?: string;
   price: number;
-  image_url?: string;
+  imageUrl?: string;
   contents?: string[];
   category?: string;
   emoji?: string;
-  is_available: boolean;
+  isAvailable: boolean;
 }
 
 export interface CreateBoxDto {
@@ -64,16 +64,16 @@ export interface CreateBoxDto {
 // Order types
 export interface Order {
   id: string;
-  order_number: string;
-  created_at: Date;
-  user_id?: string;
-  box_id?: string;
-  customer_name: string;
-  customer_phone: string;
-  customer_email?: string;
-  delivery_method: string;
-  payment_method: string;
-  total_price: number;
+  orderNumber: string;
+  createdAt: Date;
+  userId?: string;
+  boxId?: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  deliveryMethod: string;
+  paymentMethod: string;
+  totalPrice: number;
   status: string;
 }
 
@@ -91,9 +91,9 @@ export interface CreateOrderDto {
 // Notification types
 export interface Notification {
   id: string;
-  created_at: Date;
-  user_id: string;
-  box_id: string;
+  createdAt: Date;
+  userId: string;
+  boxId: string;
 }
 
 export interface CreateNotificationDto {
