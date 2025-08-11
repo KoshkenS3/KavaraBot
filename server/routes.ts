@@ -44,8 +44,24 @@ router.get("/api/users/telegram/:telegramId", async (req, res) => {
 
 router.post("/api/users", async (req, res) => {
   try {
-    const userData: CreateUserDto = req.body;
-    const user = await storage.createUser(userData);
+    const { telegramId, username, firstName, lastName } = req.body;
+    
+    // Check if user already exists
+    if (telegramId) {
+      const existingUser = await storage.getUserByTelegramId(telegramId);
+      if (existingUser) {
+        return res.json(existingUser);
+      }
+    }
+    
+    // Create new user
+    const user = await storage.createUser({
+      telegramId,
+      username,
+      firstName,
+      lastName,
+    });
+    
     res.status(201).json(user);
   } catch (error) {
     console.error("Error creating user:", error);

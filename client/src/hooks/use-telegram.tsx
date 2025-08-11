@@ -131,39 +131,59 @@ export function useTelegram(): UseTelegramReturn {
   const [isInTelegram, setIsInTelegram] = useState(false);
 
   useEffect(() => {
-    // Check if we're running in Telegram WebApp
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      setWebApp(tg);
-      setIsInTelegram(true);
+    const initTelegram = async () => {
+      // Check if we're running in Telegram WebApp
+      if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        const tg = window.Telegram.WebApp;
+        setWebApp(tg);
+        setIsInTelegram(true);
 
-      // Initialize the app
-      tg.ready();
-      tg.expand();
+        // Initialize the app
+        tg.ready();
+        tg.expand();
 
-      // Set user data
-      if (tg.initDataUnsafe?.user) {
-        setUser(tg.initDataUnsafe.user);
+        // Set user data and create in database
+        if (tg.initDataUnsafe?.user) {
+          const telegramUser = tg.initDataUnsafe.user;
+          setUser(telegramUser);
+          
+          // Create or get user in our database
+          try {
+            const response = await fetch('/api/users', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                telegramId: telegramUser.id.toString(),
+                username: telegramUser.username,
+                firstName: telegramUser.first_name,
+                lastName: telegramUser.last_name,
+              }),
+            });
+            
+            if (!response.ok) {
+              console.error('Failed to create/get user:', response.statusText);
+            }
+          } catch (error) {
+            console.error('Error creating/getting user:', error);
+          }
+        }
+
+        // Apply theme
+        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
+        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
+        document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#2481cc');
+        document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#2481cc');
+        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+
+      } else {
+        // Not in Telegram environment
+        setIsInTelegram(false);
       }
+    };
 
-      // Apply theme
-      document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
-      document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
-      document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#2481cc');
-      document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#2481cc');
-      document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
-
-    } else {
-      // Development mode - use mock user
-      setUser({
-        id: 123456789,
-        first_name: 'Test',
-        last_name: 'User',
-        username: 'testuser',
-        language_code: 'ru'
-      });
-      setIsInTelegram(false);
-    }
+    initTelegram();
   }, []);
 
   const showBackButton = () => {
