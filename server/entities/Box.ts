@@ -2,6 +2,14 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } f
 import { Order } from "./Order";
 import { Notification } from "./Notification";
 
+export enum SportType {
+  running = "running",
+  power = "power",  
+  yoga = "yoga",
+  cycling = "cycling",
+  command_sports = "command_sports",
+}
+
 @Entity("boxes")
 export class Box {
   @PrimaryGeneratedColumn("uuid")
@@ -27,6 +35,10 @@ export class Box {
 
   @Column({ type: "varchar", nullable: true })
   category?: string;
+
+  //массив видов спорта не обязательно
+  @Column({ type: "simple-array", nullable: true })
+  sportTypes?: SportType[];
 
   @Column({ type: "varchar", nullable: true })
   emoji?: string;

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { storage } from "./storage";
+import { getTopRecommendations } from "./recommendation";
 import type { 
   User, 
   QuizResponse, 
@@ -145,13 +146,36 @@ router.put("/api/quiz-responses/user/:userId", async (req, res) => {
 // Boxes
 router.get("/api/boxes", async (req, res) => {
   try {
-    const { category } = req.query;
+    const { category, userId } = req.query;
     let boxes: Box[];
     
     if (category && typeof category === "string") {
       boxes = await storage.getBoxesByCategory(category);
     } else {
       boxes = await storage.getAllBoxes();
+    }
+    
+    // Если передан userId, применяем персонализированную фильтрацию для любых боксов
+    if (userId && typeof userId === "string") {
+      try {
+        // Получаем данные квиза пользователя
+        let quizResponse;
+        if (/^\d+$/.test(userId)) {
+          // Если userId похож на telegramId (числовая строка)
+          quizResponse = await storage.getQuizResponseByTelegramId(userId);
+        } else {
+          // Иначе это UUID
+          quizResponse = await storage.getQuizResponse(userId);
+        }
+        
+        if (quizResponse) {
+          // Применяем персонализированную фильтрацию
+          boxes = getTopRecommendations(boxes, quizResponse);
+        }
+      } catch (quizError) {
+        console.warn("Could not fetch quiz response for user:", userId, quizError);
+        // Если не удается получить данные квиза, возвращаем обычные боксы
+      }
     }
     
     res.json(boxes);

@@ -3,18 +3,26 @@ import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import AppHeader from "@/components/app-header";
 import BoxCard from "@/components/box-card";
+import { useTelegram } from "@/hooks/use-telegram";
 import type { Box } from "@shared/schema";
 
 export default function PersonalBoxes() {
   const [, setLocation] = useLocation();
+  const { user } = useTelegram();
 
   const { data: personalBoxes, isLoading } = useQuery({
-    queryKey: ["/api/boxes", { category: "personal" }],
+    queryKey: ["/api/boxes", { userId: user?.id }],
     queryFn: async () => {
-      const response = await fetch("/api/boxes?category=personal");
+      // Передаем userId для персонализированной фильтрации всех боксов
+      const url = user?.id 
+        ? `/api/boxes?userId=${user.id}`
+        : "/api/boxes";
+      
+      const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch boxes");
       return response.json() as Promise<Box[]>;
     },
+    enabled: !!user, // Запрос выполняется только когда пользователь доступен
   });
 
   const handleSelectBox = (box: Box) => {

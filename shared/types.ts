@@ -36,6 +36,15 @@ export interface CreateQuizResponseDto {
   budget?: string;
 }
 
+// Sport types enum
+export enum SportType {
+  running = "running",
+  power = "power",  
+  yoga = "yoga",
+  cycling = "cycling",
+  command_sports = "command_sports",
+}
+
 // Box types
 export interface Box {
   id: string;
@@ -46,6 +55,7 @@ export interface Box {
   imageUrl?: string;
   contents?: string[];
   category?: string;
+  sportTypes?: SportType[];
   emoji?: string;
   isAvailable: boolean;
 }
@@ -57,6 +67,7 @@ export interface CreateBoxDto {
   imageUrl?: string;
   contents?: string[];
   category?: string;
+  sportTypes?: SportType[];
   emoji?: string;
   isAvailable?: boolean;
 }
