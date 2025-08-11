@@ -5,6 +5,8 @@ import { QuizResponse } from "./entities/QuizResponse";
 import { Box } from "./entities/Box";
 import { Order } from "./entities/Order";
 import { Notification } from "./entities/Notification";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -12,7 +14,7 @@ export const AppDataSource = new DataSource({
   synchronize: true, // Only for development
   logging: true, // Enable logging for debugging
   entities: [User, QuizResponse, Box, Order, Notification],
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  // ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   dropSchema: false, // Don't drop schema automatically
 });
 
