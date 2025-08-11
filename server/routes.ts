@@ -85,7 +85,14 @@ router.get("/api/quiz-responses/:userId", async (req, res) => {
 
 router.get("/api/quiz-responses/user/:userId", async (req, res) => {
   try {
-    const response = await storage.getQuizResponse(req.params.userId);
+    // Check if userId is telegramId (numeric) or UUID
+    let response;
+    if (/^\d+$/.test(req.params.userId)) {
+      response = await storage.getQuizResponseByTelegramId(req.params.userId);
+    } else {
+      response = await storage.getQuizResponse(req.params.userId);
+    }
+    
     if (!response) {
       return res.status(404).json({ error: "Quiz response not found" });
     }
@@ -194,6 +201,7 @@ router.get("/api/orders/:id", async (req, res) => {
 
 router.get("/api/orders/user/:userId", async (req, res) => {
   try {
+    // The storage method now handles both telegramId and UUID automatically
     const orders = await storage.getOrdersByUser(req.params.userId);
     res.json(orders);
   } catch (error) {

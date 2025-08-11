@@ -77,9 +77,24 @@ export class DatabaseStorage implements IStorage {
     return await this.quizResponseRepository.findOneBy({ userId });
   }
 
+  async getQuizResponseByTelegramId(telegramId: string): Promise<QuizResponse | null> {
+    const user = await this.getUserByTelegramId(telegramId);
+    if (!user) return null;
+    return await this.quizResponseRepository.findOneBy({ userId: user.id });
+  }
+
   async createQuizResponse(responseData: CreateQuizResponseDto): Promise<QuizResponse> {
+    // If userId looks like telegramId (numeric string), find the actual user
+    let actualUserId = responseData.userId;
+    if (responseData.userId && /^\d+$/.test(responseData.userId)) {
+      const user = await this.getUserByTelegramId(responseData.userId);
+      if (user) {
+        actualUserId = user.id;
+      }
+    }
+
     const response = this.quizResponseRepository.create({
-      userId: responseData.userId,
+      userId: actualUserId,
       size: responseData.size,
       height: responseData.height,
       weight: responseData.weight,
@@ -90,7 +105,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateQuizResponse(userId: string, updateData: Partial<CreateQuizResponseDto>): Promise<QuizResponse | null> {
-    const existing = await this.getQuizResponse(userId);
+    // If userId looks like telegramId (numeric string), find the actual user
+    let actualUserId = userId;
+    if (userId && /^\d+$/.test(userId)) {
+      const user = await this.getUserByTelegramId(userId);
+      if (user) {
+        actualUserId = user.id;
+      }
+    }
+
+    const existing = await this.getQuizResponse(actualUserId);
     if (!existing) return null;
     
     Object.assign(existing, {
@@ -140,17 +164,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrdersByUser(userId: string): Promise<Order[]> {
+    // If userId looks like telegramId (numeric string), find the actual user
+    let actualUserId = userId;
+    if (userId && /^\d+$/.test(userId)) {
+      const user = await this.getUserByTelegramId(userId);
+      if (user) {
+        actualUserId = user.id;
+      }
+    }
+
     return await this.orderRepository.find({
-      where: { userId },
+      where: { userId: actualUserId },
       order: { createdAt: "DESC" }
     });
   }
 
   async createOrder(orderData: CreateOrderDto): Promise<Order> {
+    // If userId looks like telegramId (numeric string), find the actual user
+    let actualUserId = orderData.userId;
+    if (orderData.userId && /^\d+$/.test(orderData.userId)) {
+      const user = await this.getUserByTelegramId(orderData.userId);
+      if (user) {
+        actualUserId = user.id;
+      }
+    }
+
     const orderNumber = `KB${Date.now().toString().slice(-6)}`;
     const order = this.orderRepository.create({
       orderNumber,
-      userId: orderData.userId,
+      userId: actualUserId,
       boxId: orderData.boxId,
       customerName: orderData.customerName,
       customerPhone: orderData.customerPhone,
