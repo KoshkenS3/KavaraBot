@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import LoadingOverlay from "@/components/loading-overlay";
 import type { Box, InsertOrder } from "@shared/schema";
-import { mockUser } from "@/lib/mock-data";
+import { useTelegram } from "@/hooks/use-telegram";
 
 interface OrderFormData {
   customerName: string;
@@ -23,6 +23,7 @@ interface OrderFormData {
 export default function Order() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user, isInTelegram } = useTelegram();
   const [selectedBox, setSelectedBox] = useState<Box | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<OrderFormData>({
@@ -106,7 +107,7 @@ export default function Order() {
     // Simulate processing time
     setTimeout(() => {
       const orderData: InsertOrder = {
-        userId: mockUser.id,
+        userId: user?.id.toString() || "",
         boxId: selectedBox.id,
         customerName: formData.customerName,
         customerPhone: formData.customerPhone,
@@ -120,6 +121,21 @@ export default function Order() {
       setIsLoading(false);
     }, 2000);
   };
+
+  // Check authentication
+  if (!isInTelegram || !user) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-black mb-4">Доступ запрещен</h1>
+          <p className="text-gray-600 mb-6">
+            Заказы доступны только пользователям Telegram
+          </p>
+          <Button onClick={() => setLocation("/")}>На главную</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedBox) {
     return (

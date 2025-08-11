@@ -4,16 +4,18 @@ import { ArrowLeft, Package, Clock, CheckCircle, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Order } from "@shared/schema";
-import { mockUser } from "@/lib/mock-data";
+import { useTelegram } from "@/hooks/use-telegram";
 
 export default function MyOrders() {
+  const { user, isInTelegram } = useTelegram();
   const { data: orders, isLoading } = useQuery({
-    queryKey: ["/api/orders/user", mockUser.id],
+    queryKey: ["/api/orders/user", user?.id],
     queryFn: async () => {
-      const response = await fetch(`/api/orders/user/${mockUser.id}`);
+      const response = await fetch(`/api/orders/user/${user?.id}`);
       if (!response.ok) throw new Error("Failed to fetch orders");
       return response.json() as Promise<Order[]>;
     },
+    enabled: !!user?.id,
   });
 
   const currentOrders = orders?.filter(order => 
@@ -44,6 +46,21 @@ export default function MyOrders() {
       default: return "Неизвестно";
     }
   };
+
+  // Check authentication
+  if (!isInTelegram || !user) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-black mb-4">Доступ запрещен</h1>
+          <p className="text-gray-600 mb-6">
+            Заказы доступны только пользователям Telegram
+          </p>
+          <Button onClick={() => window.location.href = "/"}>На главную</Button>
+        </div>
+      </div>
+    );
+  }
 
   const OrderCard = ({ order }: { order: Order }) => (
     <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">

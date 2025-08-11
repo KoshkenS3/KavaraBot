@@ -83,6 +83,19 @@ router.get("/api/quiz-responses/:userId", async (req, res) => {
   }
 });
 
+router.get("/api/quiz-responses/user/:userId", async (req, res) => {
+  try {
+    const response = await storage.getQuizResponse(req.params.userId);
+    if (!response) {
+      return res.status(404).json({ error: "Quiz response not found" });
+    }
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching quiz response:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.post("/api/quiz-responses", async (req, res) => {
   try {
     const responseData: CreateQuizResponseDto = req.body;
@@ -95,6 +108,20 @@ router.post("/api/quiz-responses", async (req, res) => {
 });
 
 router.put("/api/quiz-responses/:userId", async (req, res) => {
+  try {
+    const updateData: Partial<CreateQuizResponseDto> = req.body;
+    const response = await storage.updateQuizResponse(req.params.userId, updateData);
+    if (!response) {
+      return res.status(404).json({ error: "Quiz response not found" });
+    }
+    res.json(response);
+  } catch (error) {
+    console.error("Error updating quiz response:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/api/quiz-responses/user/:userId", async (req, res) => {
   try {
     const updateData: Partial<CreateQuizResponseDto> = req.body;
     const response = await storage.updateQuizResponse(req.params.userId, updateData);

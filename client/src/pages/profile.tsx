@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockUser } from "@/lib/mock-data";
+import { useTelegram } from "@/hooks/use-telegram";
 import type { QuizResponse } from "@shared/schema";
 
 export default function Profile() {
+  const { user, isInTelegram } = useTelegram();
   const [isEditing, setIsEditing] = useState(false);
   const [notifications, setNotifications] = useState({
     orders: true,
@@ -18,16 +19,32 @@ export default function Profile() {
   });
 
   const { data: quizResponse } = useQuery<QuizResponse>({
-    queryKey: ["/api/quiz-responses/user", mockUser.id],
+    queryKey: ["/api/quiz-responses/user", user?.id],
     queryFn: async () => {
-      const response = await fetch(`/api/quiz-responses/user/${mockUser.id}`);
+      const response = await fetch(`/api/quiz-responses/user/${user?.id}`);
       if (!response.ok) {
         if (response.status === 404) return null;
         throw new Error("Failed to fetch quiz response");
       }
       return response.json();
     },
+    enabled: !!user?.id,
   });
+
+  // Check authentication
+  if (!isInTelegram || !user) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-black mb-4">Доступ запрещен</h1>
+          <p className="text-gray-600 mb-6">
+            Профиль доступен только пользователям Telegram
+          </p>
+          <Button onClick={() => window.location.href = "/"}>На главную</Button>
+        </div>
+      </div>
+    );
+  }
 
   const PersonalData = () => (
     <div className="space-y-4">
@@ -49,7 +66,7 @@ export default function Profile() {
             <Label htmlFor="firstName">Имя</Label>
             <Input
               id="firstName"
-              defaultValue={mockUser.firstName}
+              defaultValue={user.first_name || ""}
               disabled={!isEditing}
             />
           </div>
@@ -57,7 +74,7 @@ export default function Profile() {
             <Label htmlFor="lastName">Фамилия</Label>
             <Input
               id="lastName"
-              defaultValue={mockUser.lastName}
+              defaultValue={user.last_name || ""}
               disabled={!isEditing}
             />
           </div>
@@ -65,7 +82,7 @@ export default function Profile() {
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              defaultValue={mockUser.username}
+              defaultValue={user.username || ""}
               disabled={!isEditing}
             />
           </div>

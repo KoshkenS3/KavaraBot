@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AppHeader from "@/components/app-header";
 import { useQuiz } from "@/hooks/use-quiz";
-import { mockUser } from "@/lib/mock-data";
+import { useTelegram } from "@/hooks/use-telegram";
 
 const sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -28,6 +28,7 @@ const budgetOptions = [
 
 export default function Quiz() {
   const [, setLocation] = useLocation();
+  const { user, isInTelegram } = useTelegram();
   const {
     currentStep,
     quizData,
@@ -36,7 +37,22 @@ export default function Quiz() {
     prevStep,
     submitQuiz,
     isSubmitting,
-  } = useQuiz(mockUser.id);
+  } = useQuiz(user?.id.toString());
+
+  // Redirect if not in Telegram
+  if (!isInTelegram || !user) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-black mb-4">Доступ запрещен</h1>
+          <p className="text-gray-600 mb-6">
+            Квиз доступен только пользователям Telegram
+          </p>
+          <Button onClick={() => setLocation("/")}>На главную</Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmitQuiz = async () => {
     try {
