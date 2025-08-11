@@ -3,7 +3,11 @@ import express from 'express';
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
-export async function setupTelegramBot(app: express.Application) {
+export function setupTelegramBot() {
+  console.log("Telegram bot setup completed");
+}
+
+export async function setupTelegramBotWithApp(app: express.Application) {
   // Webhook endpoint for Telegram
   app.post('/webhook', express.json(), async (req, res) => {
     try {

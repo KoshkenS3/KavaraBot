@@ -1,307 +1,220 @@
-import { 
-  type User, 
-  type InsertUser,
-  type QuizResponse,
-  type InsertQuizResponse,
-  type Box,
-  type InsertBox,
-  type Order,
-  type InsertOrder,
-  type Notification,
-  type InsertNotification
-} from "@shared/schema";
-import { randomUUID } from "crypto";
+import { getPool } from "./database";
+import type { 
+  User,
+  QuizResponse,
+  Box,
+  Order,
+  Notification,
+  CreateUserDto, 
+  CreateQuizResponseDto, 
+  CreateBoxDto, 
+  CreateOrderDto, 
+  CreateNotificationDto 
+} from "@shared/types";
 
 export interface IStorage {
   // Users
-  getUser(id: string): Promise<User | undefined>;
-  getUserByTelegramId(telegramId: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUser(id: string): Promise<User | null>;
+  getUserByTelegramId(telegramId: string): Promise<User | null>;
+  createUser(user: CreateUserDto): Promise<User>;
 
   // Quiz Responses
-  getQuizResponse(userId: string): Promise<QuizResponse | undefined>;
-  createQuizResponse(response: InsertQuizResponse): Promise<QuizResponse>;
-  updateQuizResponse(userId: string, response: Partial<InsertQuizResponse>): Promise<QuizResponse | undefined>;
+  getQuizResponse(userId: string): Promise<QuizResponse | null>;
+  createQuizResponse(response: CreateQuizResponseDto): Promise<QuizResponse>;
+  updateQuizResponse(userId: string, response: Partial<CreateQuizResponseDto>): Promise<QuizResponse | null>;
 
   // Boxes
   getAllBoxes(): Promise<Box[]>;
-  getBox(id: string): Promise<Box | undefined>;
+  getBox(id: string): Promise<Box | null>;
   getBoxesByCategory(category: string): Promise<Box[]>;
-  createBox(box: InsertBox): Promise<Box>;
+  createBox(box: CreateBoxDto): Promise<Box>;
 
   // Orders
-  getOrder(id: string): Promise<Order | undefined>;
+  getOrder(id: string): Promise<Order | null>;
   getOrdersByUser(userId: string): Promise<Order[]>;
-  createOrder(order: InsertOrder): Promise<Order>;
+  createOrder(order: CreateOrderDto): Promise<Order>;
 
   // Notifications
-  createNotification(notification: InsertNotification): Promise<Notification>;
+  createNotification(notification: CreateNotificationDto): Promise<Notification>;
   getNotificationsByBox(boxId: string): Promise<Notification[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User> = new Map();
-  private quizResponses: Map<string, QuizResponse> = new Map();
-  private boxes: Map<string, Box> = new Map();
-  private orders: Map<string, Order> = new Map();
-  private notifications: Map<string, Notification> = new Map();
+export class DatabaseStorage implements IStorage {
+  private pool = getPool;
 
-  constructor() {
-    this.initializeBoxes();
+  async getUser(id: string): Promise<User | null> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM users WHERE id = $1",
+      [id]
+    );
+    return rows[0] || null;
   }
 
-  private initializeBoxes() {
-    // Ready boxes - KAVARA sports collections
-    const readyBoxes: InsertBox[] = [
-      {
-        name: "ФИТНЕС КОМПЛЕКТ",
-        description: "Полный набор для тренировок в спортзале",
-        price: 8990,
-        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
-        contents: ["Спортивная футболка KAVARA", "Шорты для тренировок", "Спортивные носки", "Полотенце"],
-        category: "ready",
-        emoji: "💪",
-        isAvailable: true,
-      },
-      {
-        name: "БЕГОВОЙ НАБОР",
-        description: "Легкая и дышащая одежда для бега",
-        price: 7490,
-        imageUrl: "https://images.unsplash.com/photo-1506629905877-c1e5027f5b6c",
-        contents: ["Беговая футболка", "Беговые шорты", "Компрессионные гетры"],
-        category: "ready",
-        emoji: "🏃‍♂️",
-        isAvailable: true,
-      },
-      {
-        name: "ЙОГА СТИЛЬ",
-        description: "Комфортная одежда для йоги и растяжки",
-        price: 6990,
-        imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5a",
-        contents: ["Топ для йоги", "Леггинсы", "Коврик для йоги"],
-        category: "ready",
-        emoji: "🧘‍♀️",
-        isAvailable: true,
-      },
-      // Coming soon boxes
-      {
-        name: "ПРЕМИУМ СПОРТ",
-        description: "Элитная коллекция для профессиональных спортсменов",
-        price: 15990,
-        imageUrl: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd",
-        contents: ["Премиум футболка", "Компрессионные шорты", "Профессиональные аксессуары"],
-        category: "ready",
-        emoji: "⭐",
-        isAvailable: false,
-      },
-      {
-        name: "ЗИМНИЙ СПОРТ",
-        description: "Теплая спортивная одежда для холодного времени года",
-        price: 11990,
-        imageUrl: "https://images.unsplash.com/photo-1594736797933-d0b22ce8cd6c",
-        contents: ["Утепленная куртка", "Термобелье", "Зимние аксессуары"],
-        category: "ready",
-        emoji: "❄️",
-        isAvailable: false,
-      },
-      {
-        name: "БОКС БЕГ",
-        description: "Специализированный набор для бегунов",
-        price: 10490,
-        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
-        contents: ["Беговая майка", "Компрессионные тайтсы", "Беговые кроссовки"],
-        category: "ready",
-        emoji: "🏃‍♂️",
-        isAvailable: false,
-      },
-    ];
-
-    // Personal boxes templates
-    const personalBoxes: InsertBox[] = [
-      {
-        name: "ФИТНЕС КОМФОРТ",
-        description: "Идеальный набор для кардио и силовых тренировок",
-        price: 8990,
-        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
-        contents: ["Спортивный топ", "Леггинсы high-waist", "Спортивные кроссовки"],
-        category: "personal",
-        emoji: "💪",
-        isAvailable: true,
-      },
-      {
-        name: "АКТИВНЫЙ СТИЛЬ",
-        description: "Стильный комплект для бега и активного образа жизни",
-        price: 7490,
-        imageUrl: "https://images.unsplash.com/photo-1506629905877-c1e5027f5b6c",
-        contents: ["Беговая футболка", "Спортивные шорты", "Беговые кроссовки"],
-        category: "personal",
-        emoji: "🏃‍♂️",
-        isAvailable: true,
-      },
-      {
-        name: "ПРЕМИУМ ФИТНЕС",
-        description: "Профессиональный набор из премиальных материалов",
-        price: 12990,
-        imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5a",
-        contents: ["Компрессионный топ", "Премиум леггинсы", "Профессиональные кроссовки"],
-        category: "personal",
-        emoji: "⭐",
-        isAvailable: true,
-      },
-    ];
-
-    [...readyBoxes, ...personalBoxes].forEach(insertBox => {
-      const id = randomUUID();
-      const box: Box = {
-        id, 
-        createdAt: new Date(),
-        name: insertBox.name,
-        description: insertBox.description ?? null,
-        price: insertBox.price,
-        imageUrl: insertBox.imageUrl ?? null,
-        contents: insertBox.contents ? insertBox.contents as string[] : null,
-        category: insertBox.category ?? null,
-        emoji: insertBox.emoji ?? null,
-        isAvailable: insertBox.isAvailable ?? true,
-      };
-      this.boxes.set(id, box);
-    });
+  async getUserByTelegramId(telegramId: string): Promise<User | null> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM users WHERE telegram_id = $1",
+      [telegramId]
+    );
+    return rows[0] || null;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async createUser(userData: CreateUserDto): Promise<User> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      `INSERT INTO users (telegram_id, username, first_name, last_name)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [userData.telegramId, userData.username, userData.firstName, userData.lastName]
+    );
+    return rows[0];
   }
 
-  async getUserByTelegramId(telegramId: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.telegramId === telegramId);
+  async getQuizResponse(userId: string): Promise<QuizResponse | null> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM quiz_responses WHERE user_id = $1",
+      [userId]
+    );
+    return rows[0] || null;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { 
-      id, 
-      createdAt: new Date(),
-      telegramId: insertUser.telegramId ?? null,
-      username: insertUser.username ?? null,
-      firstName: insertUser.firstName ?? null,
-      lastName: insertUser.lastName ?? null,
-    };
-    this.users.set(id, user);
-    return user;
+  async createQuizResponse(responseData: CreateQuizResponseDto): Promise<QuizResponse> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      `INSERT INTO quiz_responses (user_id, size, height, weight, goals, budget)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [responseData.userId, responseData.size, responseData.height, responseData.weight, responseData.goals, responseData.budget]
+    );
+    return rows[0];
   }
 
-  async getQuizResponse(userId: string): Promise<QuizResponse | undefined> {
-    return Array.from(this.quizResponses.values()).find(response => response.userId === userId);
-  }
-
-  async createQuizResponse(insertResponse: InsertQuizResponse): Promise<QuizResponse> {
-    const id = randomUUID();
-    const response: QuizResponse = { 
-      id, 
-      createdAt: new Date(),
-      userId: insertResponse.userId ?? null,
-      size: insertResponse.size ?? null,
-      height: insertResponse.height ?? null,
-      weight: insertResponse.weight ?? null,
-      goals: insertResponse.goals ? insertResponse.goals as string[] : null,
-      budget: insertResponse.budget ?? null,
-    };
-    this.quizResponses.set(id, response);
-    return response;
-  }
-
-  async updateQuizResponse(userId: string, updateData: Partial<InsertQuizResponse>): Promise<QuizResponse | undefined> {
+  async updateQuizResponse(userId: string, updateData: Partial<CreateQuizResponseDto>): Promise<QuizResponse | null> {
+    const client = this.pool();
     const existing = await this.getQuizResponse(userId);
-    if (!existing) return undefined;
-    
-    const updated: QuizResponse = { 
-      ...existing, 
-      size: updateData.size !== undefined ? updateData.size ?? null : existing.size,
-      height: updateData.height !== undefined ? updateData.height ?? null : existing.height,
-      weight: updateData.weight !== undefined ? updateData.weight ?? null : existing.weight,
-      goals: updateData.goals !== undefined ? (updateData.goals ? updateData.goals as string[] : null) : existing.goals,
-      budget: updateData.budget !== undefined ? updateData.budget ?? null : existing.budget,
-    };
-    this.quizResponses.set(existing.id, updated);
-    return updated;
+    if (!existing) return null;
+
+    const fields = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (updateData.size !== undefined) {
+      fields.push(`size = $${paramIndex++}`);
+      values.push(updateData.size);
+    }
+    if (updateData.height !== undefined) {
+      fields.push(`height = $${paramIndex++}`);
+      values.push(updateData.height);
+    }
+    if (updateData.weight !== undefined) {
+      fields.push(`weight = $${paramIndex++}`);
+      values.push(updateData.weight);
+    }
+    if (updateData.goals !== undefined) {
+      fields.push(`goals = $${paramIndex++}`);
+      values.push(updateData.goals);
+    }
+    if (updateData.budget !== undefined) {
+      fields.push(`budget = $${paramIndex++}`);
+      values.push(updateData.budget);
+    }
+
+    if (fields.length === 0) return existing;
+
+    values.push(userId);
+    const { rows } = await client.query(
+      `UPDATE quiz_responses SET ${fields.join(', ')} WHERE user_id = $${paramIndex} RETURNING *`,
+      values
+    );
+    return rows[0];
   }
 
   async getAllBoxes(): Promise<Box[]> {
-    return Array.from(this.boxes.values());
+    const client = this.pool();
+    const { rows } = await client.query("SELECT * FROM boxes ORDER BY created_at DESC");
+    return rows;
   }
 
-  async getBox(id: string): Promise<Box | undefined> {
-    return this.boxes.get(id);
+  async getBox(id: string): Promise<Box | null> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM boxes WHERE id = $1",
+      [id]
+    );
+    return rows[0] || null;
   }
 
   async getBoxesByCategory(category: string): Promise<Box[]> {
-    return Array.from(this.boxes.values()).filter(box => box.category === category);
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM boxes WHERE category = $1 ORDER BY created_at DESC",
+      [category]
+    );
+    return rows;
   }
 
-  async createBox(insertBox: InsertBox): Promise<Box> {
-    const id = randomUUID();
-    const box: Box = { 
-      id, 
-      createdAt: new Date(),
-      name: insertBox.name,
-      description: insertBox.description ?? null,
-      price: insertBox.price,
-      imageUrl: insertBox.imageUrl ?? null,
-      contents: insertBox.contents ? insertBox.contents as string[] : null,
-      category: insertBox.category ?? null,
-      emoji: insertBox.emoji ?? null,
-      isAvailable: insertBox.isAvailable ?? true,
-    };
-    this.boxes.set(id, box);
-    return box;
+  async createBox(boxData: CreateBoxDto): Promise<Box> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      `INSERT INTO boxes (name, description, price, image_url, contents, category, emoji, is_available)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [boxData.name, boxData.description, boxData.price, boxData.imageUrl, boxData.contents, boxData.category, boxData.emoji, boxData.isAvailable ?? true]
+    );
+    return rows[0];
   }
 
-  async getOrder(id: string): Promise<Order | undefined> {
-    return this.orders.get(id);
+  async getOrder(id: string): Promise<Order | null> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM orders WHERE id = $1",
+      [id]
+    );
+    return rows[0] || null;
   }
 
   async getOrdersByUser(userId: string): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(order => order.userId === userId);
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
+      [userId]
+    );
+    return rows;
   }
 
-  async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const id = randomUUID();
+  async createOrder(orderData: CreateOrderDto): Promise<Order> {
+    const client = this.pool();
     const orderNumber = `KB${Date.now().toString().slice(-6)}`;
-    const order: Order = { 
-      id, 
-      orderNumber,
-      createdAt: new Date(),
-      userId: insertOrder.userId ?? null,
-      boxId: insertOrder.boxId ?? null,
-      customerName: insertOrder.customerName,
-      customerPhone: insertOrder.customerPhone,
-      customerEmail: insertOrder.customerEmail ?? null,
-      deliveryMethod: insertOrder.deliveryMethod,
-      paymentMethod: insertOrder.paymentMethod,
-      totalPrice: insertOrder.totalPrice,
-      status: "pending",
-    };
-    this.orders.set(id, order);
-    return order;
+    const { rows } = await client.query(
+      `INSERT INTO orders (order_number, user_id, box_id, customer_name, customer_phone, customer_email, delivery_method, payment_method, total_price, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING *`,
+      [orderNumber, orderData.userId, orderData.boxId, orderData.customerName, orderData.customerPhone, orderData.customerEmail, orderData.deliveryMethod, orderData.paymentMethod, orderData.totalPrice, "pending"]
+    );
+    return rows[0];
   }
 
-  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
-    const id = randomUUID();
-    const notification: Notification = { 
-      id, 
-      createdAt: new Date(),
-      userId: insertNotification.userId ?? null,
-      boxId: insertNotification.boxId ?? null,
-      email: insertNotification.email ?? null,
-      phone: insertNotification.phone ?? null,
-    };
-    this.notifications.set(id, notification);
-    return notification;
+  async createNotification(notificationData: CreateNotificationDto): Promise<Notification> {
+    const client = this.pool();
+    const { rows } = await client.query(
+      `INSERT INTO notifications (user_id, box_id)
+       VALUES ($1, $2)
+       RETURNING *`,
+      [notificationData.userId, notificationData.boxId]
+    );
+    return rows[0];
   }
 
   async getNotificationsByBox(boxId: string): Promise<Notification[]> {
-    return Array.from(this.notifications.values()).filter(notification => notification.boxId === boxId);
+    const client = this.pool();
+    const { rows } = await client.query(
+      "SELECT * FROM notifications WHERE box_id = $1 ORDER BY created_at DESC",
+      [boxId]
+    );
+    return rows;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
